@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import axios from "axios";
 import TrashIcon from "./TrashIcon";
 
 const InputCategorizer = ({ onDelete, id, className }) => {
