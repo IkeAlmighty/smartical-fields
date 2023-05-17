@@ -11,21 +11,31 @@ const InputCategorizer = ({ onDelete, id, className }) => {
 
   const categorizeInput = async (input) => {
     try {
-      const response = await axios.post("/api/validate", { input });
-      if (response.data && response.data.category) {
-        return response.data.category;
+      const response = await fetch("/api/validate", {
+        method: "POST",
+        header: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ input }),
+      });
+
+      const data = await response.json();
+
+      if (data && data.category) {
+        return data.category;
       } else {
-        throw new Error(`Invalid Response: ${response.data.error}`);
+        throw new Error(`Invalid Response: ${data.error}`);
       }
     } catch (error) {
-      console.error(error);
-      return error.message || "Unknown";
+      return error?.message || "Unknown";
     }
   };
 
   const handleChange = (e) => {
     const input = e.target.value;
     setInput(input);
+    setCategory("...");
 
     // Clear the previous timer if it exists
     if (timerRef.current) {
@@ -34,6 +44,7 @@ const InputCategorizer = ({ onDelete, id, className }) => {
 
     // Set up a new timer
     timerRef.current = setTimeout(async () => {
+      setCategory("validating...");
       const category = await categorizeInput(input);
       setCategory(category);
     }, 2000); // 2000ms delay
